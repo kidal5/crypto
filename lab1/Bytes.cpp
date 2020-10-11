@@ -37,6 +37,13 @@ Bytes Bytes::from_number(char number)
 	return b;
 }
 
+Bytes Bytes::from_numbers(std::vector<char> numbers)
+{
+	Bytes b;
+	b.data = numbers;
+	return b;
+}
+
 Bytes Bytes::from_text_string(std::string text)
 {
 	Bytes output;
@@ -76,6 +83,14 @@ void Bytes::print_text(std::string prepend)
 	std::cout << std::endl;
 }
 
+void Bytes::print_text_first_line()
+{
+	for (const auto & c : data) {
+		std::cout << c;
+		if (c == '\n') return;
+	}
+}
+
 size_t Bytes::size() const
 {
 	return data.size();
@@ -84,6 +99,26 @@ size_t Bytes::size() const
 void Bytes::push_back(char c)
 {
 	data.push_back(c);
+}
+
+std::vector<char>::iterator Bytes::begin()
+{
+	return data.begin();
+}
+
+std::vector<char>::const_iterator Bytes::begin() const
+{
+	return data.cbegin();
+}
+
+std::vector<char>::iterator Bytes::end()
+{
+	return data.end();
+}
+
+std::vector<char>::const_iterator Bytes::end() const
+{
+	return data.cend();
 }
 
 bool operator==(const Bytes & a, const Bytes & b)
