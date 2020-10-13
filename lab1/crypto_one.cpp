@@ -32,7 +32,7 @@ void task_two() {
 
 	//explanation of patterns seen in hex text
 	//there can be seen a lot of hex numbers in format 4x or 5x
-	//the reason for this is simple, in ascii table all characters are in consectuive order spanning from hex 61 to 7A
+	//the reason for this is simple, in ascii table all unsigned characters are in consectuive order spanning from hex 61 to 7A
 	//that means hex string of valid text would contain lot of numbers in format 6x or 7x
 	//and beacuse this simple cipher is just shifting, the consecutive order is kept and pattern is shown
 }

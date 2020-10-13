@@ -4,19 +4,20 @@
 #include <iomanip>
 #include <fstream>
 #include <streambuf>
+#include <algorithm>
 
 
 Bytes Bytes::from_hex_string(std::string hex)
 {
 	auto convert_to_char = [](std::string conv) {
-		unsigned char num = std::stoi(conv, nullptr, 16);
+		char num = std::stoi(conv, nullptr, 16);
 		return num;
 	};
 
 	Bytes output;
 	for (size_t i = 0; i < hex.size(); i += 2) {
 		if (hex[i] == '\n') i++;
-		unsigned char one_hex[3] = { hex[i], hex[i + 1], NULL };
+		char one_hex[3] = { hex[i], hex[i + 1], NULL };
 		auto converted = convert_to_char(one_hex);
 		output.push_back(converted);
 	}
@@ -26,18 +27,18 @@ Bytes Bytes::from_hex_string(std::string hex)
 Bytes Bytes::from_hex_file(std::string filename)
 {
 	std::ifstream t(filename);
-	std::string str((std::istreambuf_iterator<unsigned char>(t)), std::istreambuf_iterator<unsigned char>());
+	std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 	return Bytes::from_hex_string(str);
 }
 
-Bytes Bytes::from_number(unsigned char number)
+Bytes Bytes::from_number(char number)
 {
 	Bytes b;
 	b.push_back(number);
 	return b;
 }
 
-Bytes Bytes::from_numbers(std::vector<unsigned char> numbers)
+Bytes Bytes::from_numbers(std::vector<char> numbers)
 {
 	Bytes b;
 	b.data = numbers;
@@ -52,7 +53,19 @@ Bytes Bytes::from_text_string(std::string text)
 	return output;
 }
 
-unsigned char Bytes::operator[](size_t index) const
+Bytes Bytes::from_uint8(uint8_t * buffer, size_t buflen)
+{
+	Bytes out;
+	out.data.reserve(buflen);
+	for (size_t i = 0; i < buflen; i++)
+		out.push_back(buffer[i]);
+	return out;
+
+
+	return Bytes();
+}
+
+char Bytes::operator[](size_t index) const
 {
 	return data[index];
 }
@@ -60,6 +73,9 @@ unsigned char Bytes::operator[](size_t index) const
 void Bytes::print_hex(std::string prepend, int column_size)
 {
 	std::cout << prepend;
+	if (column_size != -1 && prepend.size() > 0)
+		std::cout << std::endl;
+
 
 	auto newline = [column_size](size_t index) {
 		if (index == 0) return false;
@@ -69,7 +85,7 @@ void Bytes::print_hex(std::string prepend, int column_size)
 
 	for (size_t i = 0; i < size(); i++)
 	{
-		std::cout << std::setfill('0') << std::setw(2) << std::hex << (int)data[i];
+		std::cout << std::setfill('0') << std::setw(2) << std::hex << (int)(uint8_t)data[i];
 		if (newline(i)) std::cout << std::endl;
 	}
 	std::cout << std::endl;
@@ -96,29 +112,41 @@ size_t Bytes::size() const
 	return data.size();
 }
 
-void Bytes::push_back(unsigned char c)
+void Bytes::push_back(char c)
 {
 	data.push_back(c);
 }
 
-std::vector<unsigned char>::iterator Bytes::begin()
+std::vector<char>::iterator Bytes::begin()
 {
 	return data.begin();
 }
 
-std::vector<unsigned char>::const_iterator Bytes::begin() const
+std::vector<char>::const_iterator Bytes::begin() const
 {
 	return data.cbegin();
 }
 
-std::vector<unsigned char>::iterator Bytes::end()
+std::vector<char>::iterator Bytes::end()
 {
 	return data.end();
 }
 
-std::vector<unsigned char>::const_iterator Bytes::end() const
+std::vector<char>::const_iterator Bytes::end() const
 {
 	return data.cend();
+}
+
+void Bytes::get_data(uint8_t * buffer, size_t buflen) const
+{
+	size_t to_copy = std::min(buflen, size());
+	for (size_t i = 0; i < to_copy; i++)
+		buffer[i] = data[i];
+}
+
+void Bytes::remove_last_n(size_t size)
+{
+	data.resize(data.size() - size);
 }
 
 bool operator==(const Bytes & a, const Bytes & b)
@@ -129,3 +157,20 @@ bool operator==(const Bytes & a, const Bytes & b)
 		if (a[i] != b[i]) return false;
 	return true;
 }
+
+Bytes operator+(const Bytes & left, const Bytes & right)
+{
+	using vec = std::vector<char>;
+
+	auto concatenate = [](vec & AB, const vec & A, const vec & B) {
+		AB.reserve(A.size() + B.size()); // preallocate memory
+		AB.insert(AB.end(), A.begin(), A.end());
+		AB.insert(AB.end(), B.begin(), B.end());
+	};
+
+	Bytes b;
+	concatenate(b.data, left.data, right.data);
+	return b;
+}
+
+

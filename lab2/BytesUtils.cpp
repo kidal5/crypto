@@ -1,6 +1,8 @@
 #include "BytesUtils.h"
 #include "Bytes.h"
+#include "aes.hpp"
 
+#include <assert.h>
 #include <functional>
 #include <algorithm>
 #include <iostream>
@@ -11,8 +13,8 @@ Bytes BytesUtils::xor_together(const Bytes & text, const Bytes & key)
 	Bytes output;
 	for (size_t i = 0; i < text.size(); i++)
 	{
-		unsigned char c = text[i];
-		unsigned char k = key[i % key.size()];
+		char c = text[i];
+		char k = key[i % key.size()];
 		output.push_back(c^k);
 	}
 	return output;
@@ -20,7 +22,7 @@ Bytes BytesUtils::xor_together(const Bytes & text, const Bytes & key)
 
 Bytes BytesUtils::find_key(const Bytes & text, size_t key_length)
 {
-	std::vector<unsigned char> final_key_temp;
+	std::vector<char> final_key_temp;
 
 	for (int key_index = 0; key_index < key_length; key_index++)
 	{
@@ -35,7 +37,7 @@ Bytes BytesUtils::find_key(const Bytes & text, size_t key_length)
 
 			if (score < 1000) {
 				if (already_put) throw std::exception("More keys possible");
-				final_key_temp.push_back((unsigned char)c);
+				final_key_temp.push_back((char)c);
 				already_put = true;
 			}
 		}
@@ -50,7 +52,7 @@ Bytes BytesUtils::find_key(const Bytes & text, size_t key_length)
 int BytesUtils::score(const Bytes & bytes)
 {
 	//first check if all bytes are in valid english range...
-	auto is_unsigned char_in_range = [](unsigned char c) {
+	auto is_char_in_range = [](char c) {
 		if (c == '\n') return true;
 		if (c >= 128) return false;
 		if (c < 32) return false;
@@ -58,13 +60,13 @@ int BytesUtils::score(const Bytes & bytes)
 	};
 
 	for (const auto & byte : bytes) {
-		if (!is_unsigned char_in_range(byte)) return 1000;
+		if (!is_char_in_range(byte)) return 1000;
 	}
 
 	return 0;
 }
 
-Bytes BytesUtils::skip_n(const Bytes & bytes, int start, int skip)
+Bytes BytesUtils::skip_n(const Bytes & bytes, int start, size_t skip)
 {
 	Bytes b;
 	for (size_t i = start; i < bytes.size(); i += skip)
@@ -108,8 +110,87 @@ size_t BytesUtils::compute_key_length(const Bytes & bytes, int max_key_length)
 	});
 
 	//take two topmost element and find gcd.. this should be the keylenth
-	int elem1 = std::get<0>(iocs[0]);
-	int elem2 = std::get<0>(iocs[1]);
+	size_t elem1 = std::get<0>(iocs[0]);
+	size_t elem2 = std::get<0>(iocs[1]);
 
 	return gcd(elem1, elem2);
+}
+
+Bytes BytesUtils::encrypt_aes_block(const Bytes & data, const Bytes & key)
+{
+	return crypt_aes_block(data, key, AesOptions::ENCRYPT);
+}
+
+Bytes BytesUtils::decrypt_aes_block(const Bytes & data, const Bytes & key)
+{
+	return crypt_aes_block(data, key, AesOptions::DECRYPT);
+}
+
+Bytes BytesUtils::crypt_aes_block(const Bytes & data, const Bytes & key, AesOptions opt)
+{
+	if (key.size() != 16) throw std::exception("Key size is not 16 bytes");
+
+	uint8_t dd[16];
+	uint8_t kk[16];
+
+	data.get_data(dd, 16);
+	key.get_data(kk, 16);
+
+	AES_ctx ctx;
+	AES_init_ctx(&ctx, kk);
+	if (opt == AesOptions::ENCRYPT) {
+		AES_ECB_encrypt(&ctx, dd);
+	}
+	else {
+		AES_ECB_decrypt(&ctx, dd);
+	}
+
+	return Bytes::from_uint8(dd, 16);
+}
+
+Bytes BytesUtils::pad(const Bytes & data)
+{
+	//pads data to be multiple of 16, aka PKCS#7 padding
+	Bytes b = data;
+	size_t to_pad = 16 - (data.size() % 16);
+	for (size_t i = 0; i < to_pad; i++)
+		b.push_back(to_pad);
+	
+	assert((b.size() % 16) == 0);
+	return b;
+}
+
+Bytes BytesUtils::unpad(const Bytes & data)
+{
+	size_t padded = data[data.size() - 1];
+	//first check if padding is correct
+	for (size_t i = data.size() - 1; i > data.size() - 1 - padded; i--)
+		assert(data[i] == padded);
+
+	Bytes out = data;
+	out.remove_last_n(padded);
+	return out;
+}
+
+Bytes BytesUtils::cut_to_block(const Bytes & input, size_t index)
+{
+	Bytes b;
+	for (size_t i = 0; i < 16; i++)
+		b.push_back(input[index * 16 + i]);
+
+	return b;
+}
+
+Bytes BytesUtils::encrypt_aes_ecb(const Bytes & data, const Bytes & key)
+{
+	Bytes padded = BytesUtils::pad(data);
+	Bytes output;
+
+	int num_blocks = padded.size() / 16;
+	for (size_t i = 0; i < num_blocks; i++)
+	{
+		Bytes block = BytesUtils::cut_to_block(padded, i);
+		output = output + BytesUtils::encrypt_aes_block(block, key);
+	}
+	return output;
 }
