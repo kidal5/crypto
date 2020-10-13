@@ -181,6 +181,21 @@ Bytes BytesUtils::cut_to_block(const Bytes & input, size_t index)
 	return b;
 }
 
+Bytes BytesUtils::swap_block(const Bytes & input, size_t block_a, size_t block_b)
+{
+	Bytes b = input;
+
+	for (size_t i = 0; i < 16; i++)
+	{
+		int index_a = block_a * 16 + i;
+		int index_b = block_b * 16 + i;
+
+		b[index_a] = input[index_b];
+		b[index_b] = input[index_a];
+	}
+	return b;
+}
+
 Bytes BytesUtils::encrypt_aes_ecb(const Bytes & data, const Bytes & key)
 {
 	Bytes padded = BytesUtils::pad(data);
@@ -205,4 +220,11 @@ Bytes BytesUtils::decrypt_aes_ecb(const Bytes & data, const Bytes & key)
 	}
 
 	return BytesUtils::unpad(output);
+}
+
+Bytes BytesUtils::welcome(std::string name)
+{
+	Bytes input = Bytes::from_text_string("Your name is ") + Bytes::from_text_string(name) + Bytes::from_text_string(" and you are a user");
+	Bytes key = Bytes::from_text_string("RIDERSONTHESTORM");
+	return encrypt_aes_ecb(input, key);
 }

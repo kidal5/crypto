@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 class Bytes;
 
 enum class AesOptions {
@@ -23,7 +25,10 @@ public:
 	static Bytes unpad(const Bytes & data);
 
 	static Bytes cut_to_block(const Bytes & input, size_t index);
+	static Bytes swap_block(const Bytes & input, size_t block_a, size_t block_b);
 
 	static Bytes encrypt_aes_ecb(const Bytes & data, const Bytes & key);
 	static Bytes decrypt_aes_ecb(const Bytes & data, const Bytes & key);
+
+	static Bytes welcome(std::string name);
 };

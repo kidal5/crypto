@@ -57,6 +57,30 @@ void task_seven() {
 	output.print_text("Solution to excersise 7 is: ");
 }
 
+void task_eight() {
+	//question 1:
+	//there are lot of lines, that has the same encryption / 3130c68457ca3d0783e5a5beec8965b1ce2b204963fd41209775362f9db531ef
+	//i would suppose, that this will be text of chorus when decrypted
+
+	//question 2:
+	//that last 'alone' block is padding
+	//its plaintext should be 16 coppies of byte 16 / aka 10101010101010101010101010101010 in hex
+	auto input = Bytes::from_hex_file("text1.hex");
+	input = BytesUtils::swap_block(input, 0, 4);
+	input = BytesUtils::swap_block(input, 1, 5);
+	auto key = Bytes::from_text_string("TLKNGBTMYGNRTION");
+
+	auto plaintext = BytesUtils::decrypt_aes_ecb(input, key);
+	plaintext.print_text_first_line("Solution to excersise 8 is: ");
+}
+
+void task_nine() {
+	auto jim = BytesUtils::welcome("Jim");
+	jim.print_hex();
+	std::cout << std::endl << jim.size() << std::endl;
+
+}
+
 int main()
 {
 	//task_one();
@@ -65,5 +89,7 @@ int main()
 	//task_four();
 	//task_five();
 	//task_six();
-	task_seven();
+	//task_seven();
+	//task_eight();
+	task_nine();
 }

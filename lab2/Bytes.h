@@ -13,12 +13,13 @@ public:
 	static Bytes from_uint8(uint8_t * buffer, size_t buflen);
 
 	char operator[](size_t index) const;
+	char& operator[](size_t index);
 	friend bool operator== (const Bytes &left, const Bytes &right);
 	friend Bytes operator+ (const Bytes &left, const Bytes &right);
 
 	void print_hex(std::string prepend = "", int column_size = -1);
 	void print_text(std::string prepend = "");
-	void print_text_first_line();
+	void print_text_first_line(std::string prepend = "");
 
 	size_t size() const;
 	void push_back(char c);

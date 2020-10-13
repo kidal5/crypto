@@ -60,12 +60,14 @@ Bytes Bytes::from_uint8(uint8_t * buffer, size_t buflen)
 	for (size_t i = 0; i < buflen; i++)
 		out.push_back(buffer[i]);
 	return out;
-
-
-	return Bytes();
 }
 
 char Bytes::operator[](size_t index) const
+{
+	return data[index];
+}
+
+char & Bytes::operator[](size_t index)
 {
 	return data[index];
 }
@@ -99,8 +101,9 @@ void Bytes::print_text(std::string prepend)
 	std::cout << std::endl;
 }
 
-void Bytes::print_text_first_line()
+void Bytes::print_text_first_line(std::string prepend)
 {
+	std::cout << prepend;
 	for (const auto & c : data) {
 		std::cout << c;
 		if (c == '\n') return;
