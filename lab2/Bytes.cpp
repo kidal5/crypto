@@ -120,6 +120,11 @@ void Bytes::push_back(char c)
 	data.push_back(c);
 }
 
+void Bytes::push_front(char c)
+{
+	data.insert(data.begin(), c);
+}
+
 std::vector<char>::iterator Bytes::begin()
 {
 	return data.begin();
@@ -152,6 +157,11 @@ void Bytes::remove_last_n(size_t size)
 	data.resize(data.size() - size);
 }
 
+void Bytes::remove_first_n(size_t size)
+{
+	data.erase(data.begin());
+}
+
 bool operator==(const Bytes & a, const Bytes & b)
 {
 	if (a.size() != b.size()) return false;
@@ -173,6 +183,15 @@ Bytes operator+(const Bytes & left, const Bytes & right)
 
 	Bytes b;
 	concatenate(b.data, left.data, right.data);
+	return b;
+}
+
+Bytes operator*(const Bytes & left, int number)
+{
+	Bytes b;
+	for (size_t i = 0; i < number; i++)
+		for (const auto val : left)
+			b.push_back(val);
 	return b;
 }
 

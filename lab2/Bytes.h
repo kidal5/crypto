@@ -16,6 +16,7 @@ public:
 	char& operator[](size_t index);
 	friend bool operator== (const Bytes &left, const Bytes &right);
 	friend Bytes operator+ (const Bytes &left, const Bytes &right);
+	friend Bytes operator* (const Bytes &left, int number);
 
 	void print_hex(std::string prepend = "", int column_size = -1);
 	void print_text(std::string prepend = "");
@@ -23,6 +24,7 @@ public:
 
 	size_t size() const;
 	void push_back(char c);
+	void push_front(char c);
 
 	std::vector<char>::iterator begin();
 	std::vector<char>::const_iterator begin() const;
@@ -32,6 +34,7 @@ public:
 
 	void get_data(uint8_t * buffer, size_t buflen) const;
 	void remove_last_n(size_t size);
+	void remove_first_n(size_t size);
 
 private:
 	std::vector<char> data;
