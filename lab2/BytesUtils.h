@@ -25,4 +25,5 @@ public:
 	static Bytes cut_to_block(const Bytes & input, size_t index);
 
 	static Bytes encrypt_aes_ecb(const Bytes & data, const Bytes & key);
+	static Bytes decrypt_aes_ecb(const Bytes & data, const Bytes & key);
 };

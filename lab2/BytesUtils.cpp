@@ -155,7 +155,7 @@ Bytes BytesUtils::pad(const Bytes & data)
 	size_t to_pad = 16 - (data.size() % 16);
 	for (size_t i = 0; i < to_pad; i++)
 		b.push_back(to_pad);
-	
+
 	assert((b.size() % 16) == 0);
 	return b;
 }
@@ -187,10 +187,22 @@ Bytes BytesUtils::encrypt_aes_ecb(const Bytes & data, const Bytes & key)
 	Bytes output;
 
 	int num_blocks = padded.size() / 16;
-	for (size_t i = 0; i < num_blocks; i++)
-	{
+	for (size_t i = 0; i < num_blocks; i++) {
 		Bytes block = BytesUtils::cut_to_block(padded, i);
 		output = output + BytesUtils::encrypt_aes_block(block, key);
 	}
 	return output;
+}
+
+Bytes BytesUtils::decrypt_aes_ecb(const Bytes & data, const Bytes & key)
+{
+	Bytes output;
+
+	int num_blocks = data.size() / 16;
+	for (size_t i = 0; i < num_blocks; i++) {
+		Bytes block = BytesUtils::cut_to_block(data, i);
+		output = output + BytesUtils::decrypt_aes_block(block, key);
+	}
+
+	return BytesUtils::unpad(output);
 }

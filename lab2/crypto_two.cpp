@@ -49,6 +49,14 @@ void task_six() {
 	output.print_hex("Solution to excersise 6 is: ", 16);
 }
 
+void task_seven() {
+	auto text = Bytes::from_hex_string("792c2e2ec4e18e9d3a82f6724cf53848abb28d529a85790923c94b5c5abc34f50929a03550e678949542035cd669d4c66da25e59a5519689b3b4e11a870e7cea");
+	auto key = Bytes::from_text_string("If the mountains");
+
+	auto output = BytesUtils::decrypt_aes_ecb(text, key);
+	output.print_text("Solution to excersise 7 is: ");
+}
+
 int main()
 {
 	//task_one();
@@ -56,5 +64,6 @@ int main()
 	//task_three();
 	//task_four();
 	//task_five();
-	task_six();
+	//task_six();
+	task_seven();
 }
