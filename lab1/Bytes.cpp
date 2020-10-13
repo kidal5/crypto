@@ -9,14 +9,14 @@
 Bytes Bytes::from_hex_string(std::string hex)
 {
 	auto convert_to_char = [](std::string conv) {
-		unsigned char num = std::stoi(conv, nullptr, 16);
+		char num = std::stoi(conv, nullptr, 16);
 		return num;
 	};
 
 	Bytes output;
 	for (size_t i = 0; i < hex.size(); i += 2) {
 		if (hex[i] == '\n') i++;
-		unsigned char one_hex[3] = { hex[i], hex[i + 1], NULL };
+		char one_hex[3] = { hex[i], hex[i + 1], NULL };
 		auto converted = convert_to_char(one_hex);
 		output.push_back(converted);
 	}
@@ -26,18 +26,18 @@ Bytes Bytes::from_hex_string(std::string hex)
 Bytes Bytes::from_hex_file(std::string filename)
 {
 	std::ifstream t(filename);
-	std::string str((std::istreambuf_iterator<unsigned char>(t)), std::istreambuf_iterator<unsigned char>());
+	std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 	return Bytes::from_hex_string(str);
 }
 
-Bytes Bytes::from_number(unsigned char number)
+Bytes Bytes::from_number(char number)
 {
 	Bytes b;
 	b.push_back(number);
 	return b;
 }
 
-Bytes Bytes::from_numbers(std::vector<unsigned char> numbers)
+Bytes Bytes::from_numbers(std::vector<char> numbers)
 {
 	Bytes b;
 	b.data = numbers;
@@ -52,7 +52,7 @@ Bytes Bytes::from_text_string(std::string text)
 	return output;
 }
 
-unsigned char Bytes::operator[](size_t index) const
+char Bytes::operator[](size_t index) const
 {
 	return data[index];
 }
@@ -96,27 +96,27 @@ size_t Bytes::size() const
 	return data.size();
 }
 
-void Bytes::push_back(unsigned char c)
+void Bytes::push_back(char c)
 {
 	data.push_back(c);
 }
 
-std::vector<unsigned char>::iterator Bytes::begin()
+std::vector<char>::iterator Bytes::begin()
 {
 	return data.begin();
 }
 
-std::vector<unsigned char>::const_iterator Bytes::begin() const
+std::vector<char>::const_iterator Bytes::begin() const
 {
 	return data.cbegin();
 }
 
-std::vector<unsigned char>::iterator Bytes::end()
+std::vector<char>::iterator Bytes::end()
 {
 	return data.end();
 }
 
-std::vector<unsigned char>::const_iterator Bytes::end() const
+std::vector<char>::const_iterator Bytes::end() const
 {
 	return data.cend();
 }

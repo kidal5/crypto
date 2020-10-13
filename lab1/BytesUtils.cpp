@@ -11,8 +11,8 @@ Bytes BytesUtils::xor_together(const Bytes & text, const Bytes & key)
 	Bytes output;
 	for (size_t i = 0; i < text.size(); i++)
 	{
-		unsigned char c = text[i];
-		unsigned char k = key[i % key.size()];
+		char c = text[i];
+		char k = key[i % key.size()];
 		output.push_back(c^k);
 	}
 	return output;
@@ -20,7 +20,7 @@ Bytes BytesUtils::xor_together(const Bytes & text, const Bytes & key)
 
 Bytes BytesUtils::find_key(const Bytes & text, size_t key_length)
 {
-	std::vector<unsigned char> final_key_temp;
+	std::vector<char> final_key_temp;
 
 	for (int key_index = 0; key_index < key_length; key_index++)
 	{
@@ -35,7 +35,7 @@ Bytes BytesUtils::find_key(const Bytes & text, size_t key_length)
 
 			if (score < 1000) {
 				if (already_put) throw std::exception("More keys possible");
-				final_key_temp.push_back((unsigned char)c);
+				final_key_temp.push_back((char)c);
 				already_put = true;
 			}
 		}
@@ -50,7 +50,7 @@ Bytes BytesUtils::find_key(const Bytes & text, size_t key_length)
 int BytesUtils::score(const Bytes & bytes)
 {
 	//first check if all bytes are in valid english range...
-	auto is_unsigned char_in_range = [](unsigned char c) {
+	auto is_char_in_range = [](char c) {
 		if (c == '\n') return true;
 		if (c >= 128) return false;
 		if (c < 32) return false;
@@ -58,7 +58,7 @@ int BytesUtils::score(const Bytes & bytes)
 	};
 
 	for (const auto & byte : bytes) {
-		if (!is_unsigned char_in_range(byte)) return 1000;
+		if (!is_char_in_range(byte)) return 1000;
 	}
 
 	return 0;

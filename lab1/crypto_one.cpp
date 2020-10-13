@@ -32,7 +32,7 @@ void task_two() {
 
 	//explanation of patterns seen in hex text
 	//there can be seen a lot of hex numbers in format 4x or 5x
-	//the reason for this is simple, in ascii table all unsigned characters are in consectuive order spanning from hex 61 to 7A
+	//the reason for this is simple, in ascii table all characters are in consectuive order spanning from hex 61 to 7A
 	//that means hex string of valid text would contain lot of numbers in format 6x or 7x
 	//and beacuse this simple cipher is just shifting, the consecutive order is kept and pattern is shown
 }
@@ -75,9 +75,9 @@ void task_five() {
 }
 
 void task_six() {
+	std::cout << "Computing key length..." << std::endl;
 	auto ciphertext = Bytes::from_hex_file("text3.hex");
 	auto key_length = BytesUtils::compute_key_length(ciphertext);
-	std::cout << key_length << std::endl;
 
 	auto key = BytesUtils::find_key(ciphertext, key_length);
 	auto plain_text = BytesUtils::xor_together(ciphertext, key);
@@ -94,10 +94,10 @@ void task_six() {
 
 int main()
 {
-	//task_one();
-	//task_two();
-	//task_three();
-	//task_four();
-	//task_five();
+	task_one();
+	task_two();
+	task_three();
+	task_four();
+	task_five();
 	task_six();
 }
