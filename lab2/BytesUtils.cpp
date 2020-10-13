@@ -224,7 +224,21 @@ Bytes BytesUtils::decrypt_aes_ecb(const Bytes & data, const Bytes & key)
 
 Bytes BytesUtils::welcome(std::string name)
 {
-	Bytes input = Bytes::from_text_string("Your name is ") + Bytes::from_text_string(name) + Bytes::from_text_string(" and you are a user");
+	return welcome(Bytes::from_text_string(name));
+}
+
+Bytes BytesUtils::welcome(const Bytes & data)
+{
+	Bytes input = Bytes::from_text_string("Your name is ") + data + Bytes::from_text_string(" and you are a user");
 	Bytes key = Bytes::from_text_string("RIDERSONTHESTORM");
+	return encrypt_aes_ecb(input, key);
+}
+
+Bytes BytesUtils::hide_secret(const Bytes & in)
+{
+	Bytes secret = Bytes::from_text_string("this should stay secret");
+	Bytes key = Bytes::from_text_string("COOL T MAGIC KEY");
+	Bytes input = in + secret;
+
 	return encrypt_aes_ecb(input, key);
 }

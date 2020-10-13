@@ -76,8 +76,37 @@ void task_eight() {
 
 void task_nine() {
 	auto jim = BytesUtils::welcome("Jim");
-	jim.print_hex();
-	std::cout << std::endl << jim.size() << std::endl;
+	jim.print_hex("Solution to excersise 9 is: Jim: ", 16);
+
+	//to obtain block with 16x16 i need to write following input
+	//13 bytes + 3 random bytes of input + 16 bytes of target input;
+	//result will be the second block
+
+	auto sixteen = BytesUtils::cut_to_block(BytesUtils::welcome(Bytes::from_hex_string("aaaaaa10101010101010101010101010101010")), 1);
+
+	//you are an admin - length 16
+	auto admin = BytesUtils::cut_to_block(BytesUtils::welcome(Bytes::from_text_string("OOOyou are an admin")), 1);
+
+	//13 bytes + "vladislav trnka" (15) + 4 padding bytes;
+	auto name = BytesUtils::welcome(Bytes::from_text_string("Vladislav      and "));
+	name.remove_last_n(32);
+
+	auto crafted = name + admin + sixteen;
+	crafted.print_hex("Solution to excersise 9 is: Crafted exploit: ", 16);
+
+	//decrypt using 'known' key
+	auto uncrafted = BytesUtils::decrypt_aes_ecb(crafted, Bytes::from_text_string("RIDERSONTHESTORM"));
+	uncrafted.print_text("Solution to excersise 9 is: Crafted exploit decrypted: ");
+
+	//question 7:
+	//This current example can be problem in any computer based system
+	//User would get admin privilegies even though he is just normal user.
+	//nevertheless, this type of attack can be performed on many more examples
+	//in banking - altering amount of money, that has been send
+	//in university - changing grade, that has professor given to student
+}
+
+void task_ten() {
 
 }
 
@@ -91,5 +120,6 @@ int main()
 	//task_six();
 	//task_seven();
 	//task_eight();
-	task_nine();
+	//task_nine();
+	task_ten();
 }

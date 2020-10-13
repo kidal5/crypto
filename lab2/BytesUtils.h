@@ -31,4 +31,7 @@ public:
 	static Bytes decrypt_aes_ecb(const Bytes & data, const Bytes & key);
 
 	static Bytes welcome(std::string name);
+	static Bytes welcome(const Bytes & input);
+
+	static Bytes hide_secret(const Bytes & input);
 };
